@@ -16,7 +16,6 @@
 package com.google.idea.blaze.base.async.process;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -37,9 +36,11 @@ import com.intellij.util.execution.ParametersListUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
@@ -201,22 +202,29 @@ public interface ExternalTask {
       envMap.putAll(EnvironmentUtil.getEnvironmentMap());
     }
 
-    // Allow prepending custom paths to $PATH
+    // Allow adding a custom system path to lookup executables in.
     @VisibleForTesting
     static final String CUSTOM_PATH_SYSTEM_PROPERTY = "blaze.external.task.env.path";
 
-    private static final String PATH_ENVIRONMENT_VARIABLE = "PATH";
-
     @VisibleForTesting
-    static void customizeEnvironmentPath(Map<String, String> envMap) {
+    static Optional<File> getCustomBinary(String potentialCommandName) {
       String customPath = System.getProperty(CUSTOM_PATH_SYSTEM_PROPERTY);
-      if (!Strings.isNullOrEmpty(customPath)) {
-        envMap.put(
-            PATH_ENVIRONMENT_VARIABLE,
-            Joiner.on(File.pathSeparator)
-                .skipNulls()
-                .join(customPath, Strings.emptyToNull(envMap.get(PATH_ENVIRONMENT_VARIABLE))));
+      if (Strings.isNullOrEmpty(customPath)) {
+        return Optional.empty();
       }
+      if (potentialCommandName.contains(File.pathSeparator)) {
+        return Optional.empty();
+      }
+      if (potentialCommandName.contains(" ")) {
+        return Optional.empty();
+      }
+      // potentialCommandName is likely a command name like "buildozer" not an absolute path or
+      // a multi-arg command.
+      File file = new File(customPath, potentialCommandName);
+      if (!file.exists() || !file.isFile()) {
+        return Optional.empty();
+      }
+      return Optional.of(file);
     }
 
     private int invokeCommand(BlazeContext context) {
@@ -232,9 +240,17 @@ public interface ExternalTask {
         if (context.isEnding()) {
           return -1;
         }
+        if (command.isEmpty()) {
+          throw new IllegalStateException("An empty command is invalid.");
+        }
+        List<String> actualCommand = new ArrayList<String>(command);
+        Optional<File> customBinaryOverride = getCustomBinary(actualCommand.get(0));
+        if (customBinaryOverride.isPresent()) {
+          actualCommand.set(0, customBinaryOverride.get().getAbsolutePath());
+        }
         ProcessBuilder builder =
             new ProcessBuilder()
-                .command(command)
+                .command(actualCommand)
                 .redirectErrorStream(redirectErrorStream)
                 .directory(workingDirectory);
 
@@ -244,7 +260,6 @@ public interface ExternalTask {
           env.put(entry.getKey(), entry.getValue());
         }
         env.put("PWD", workingDirectory.getPath());
-        customizeEnvironmentPath(env);
 
         try {
           final Process process = builder.start();
@@ -283,6 +298,9 @@ public interface ExternalTask {
           logger.warn(e);
           IssueOutput.error(e.getMessage()).submit(context);
         }
+      } catch (IllegalStateException e) {
+        logger.warn(e);
+        IssueOutput.error(e.getMessage()).submit(context);
       } finally {
         closeQuietly(stdout);
         closeQuietly(stderr);
