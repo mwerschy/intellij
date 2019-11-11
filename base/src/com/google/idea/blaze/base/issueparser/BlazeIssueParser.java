@@ -264,12 +264,24 @@ public class BlazeIssueParser {
     @Nullable
     @Override
     protected IssueOutput createIssue(Matcher matcher) {
-      if (matcher.group(4).startsWith("Couldn't build file ")) {
-        // This is usually accompanied by a more useful error from the compiler.
+      String message = matcher.group(4);
+      String errorMessage = message;
+      if (message.matches("^Couldn't build file [^:]*: .*")) {
+        errorMessage = message.substring(message.indexOf(":") + 2);
+      }
+      // These are usually accompanied by more useful errors from the compiler.
+      if (errorMessage.matches("^Building .* java failed: .*")
+          || errorMessage.startsWith("C++ compilation of rule ")
+          || errorMessage.startsWith("Building Go ")
+          || errorMessage.startsWith("Compiling JavaScript for ")
+          || errorMessage.startsWith("Doing JavaScript library-level checking of ")
+          || errorMessage.startsWith("Compiling TypeScript ")
+          || errorMessage.startsWith("Building Dart kernel for")) {
         return null;
       }
+
       File file = fileFromAbsolutePath(matcher.group(1));
-      return IssueOutput.error(matcher.group(4))
+      return IssueOutput.error(message)
           .inFile(file)
           .onLine(Integer.parseInt(matcher.group(2)))
           .inColumn(parseOptionalInt(matcher.group(3)))
@@ -403,7 +415,7 @@ public class BlazeIssueParser {
             + "(.*: Process exited with status [0-9]+\\.)|"
             + "(build interrupted\\.)|"
             + "(Couldn't start the build. Unable to run tests.)|"
-            + "(/.*?BUILD:[0-9]+:[0-9]+: Couldn't build file .*)|"
+            + "(/.*?BUILD:[0-9]+:[0-9]+: .*)|" // ignored by BuildParser
             + "(.*))$";
 
     private GenericErrorParser() {
