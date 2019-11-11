@@ -59,7 +59,10 @@ public class BlazeIssueParser {
     ImmutableList.Builder<BlazeIssueParser.Parser> parsers =
         ImmutableList.<BlazeIssueParser.Parser>builder()
             .add(
-                new BlazeIssueParser.CompileParser(project),
+                new BlazeIssueParser.GoCompileParser(project),
+                new BlazeIssueParser.JavaScriptCompileParser(project),
+                new BlazeIssueParser.TypeScriptCompileParser(project),
+                new BlazeIssueParser.DefaultCompileParser(project),
                 new BlazeIssueParser.TracebackParser(),
                 new BlazeIssueParser.BuildParser(),
                 new BlazeIssueParser.SkylarkErrorParser(),
@@ -177,17 +180,92 @@ public class BlazeIssueParser {
     }
   }
 
-  static class CompileParser extends SingleLineParser {
+  static class GoCompileParser extends SingleLineParser {
     private final Project project;
 
-    CompileParser(Project project) {
+    GoCompileParser(Project project) {
       super(
-          "^([^:]*)" // file path
-              + ":([0-9]+)" // line number
-              + "(?::([0-9]+))?" // optional column number
-              + "(?::| -)? " // colon or hyphen separator
-              + "(?i:(fatal error|error|warning|note))" // message type (case insensitive)
-              + "(?:[^:-]+)?[:-] " // optional error code with colon or hyphen separator
+          "^([^:]*\\.go):" // file path
+              + "([0-9]+):" // line number
+              + "(?:([0-9]+):)? " // optional column number
+              + "(.*)$"); // message
+      this.project = project;
+    }
+
+    @Override
+    protected IssueOutput createIssue(Matcher matcher) {
+      final File file = FileResolver.resolveToFile(project, matcher.group(1));
+      return IssueOutput.issue(IssueOutput.Category.ERROR, matcher.group(4))
+          .inFile(file)
+          .onLine(Integer.parseInt(matcher.group(2)))
+          .inColumn(parseOptionalInt(matcher.group(3)))
+          .consoleHyperlinkRange(
+              union(fileHighlightRange(matcher, 1), matchedTextRange(matcher, 2, 3)))
+          .build();
+    }
+  }
+
+  static class TypeScriptCompileParser extends SingleLineParser {
+    private final Project project;
+
+    TypeScriptCompileParser(Project project) {
+      super(
+          "^([^:]*\\.ts):" // file path
+              + "([0-9]+):" // line number
+              + "([0-9]+) - " // column number
+              + "(warning|error|message) " // message type
+              + "(.*)$"); // message
+      this.project = project;
+    }
+
+    @Override
+    protected IssueOutput createIssue(Matcher matcher) {
+      final File file = FileResolver.resolveToFile(project, matcher.group(1));
+      IssueOutput.Category category = messageCategory(matcher.group(4));
+      return IssueOutput.issue(category, matcher.group(5))
+          .inFile(file)
+          .onLine(Integer.parseInt(matcher.group(2)))
+          .inColumn(Integer.parseInt(matcher.group(3)))
+          .consoleHyperlinkRange(
+              union(fileHighlightRange(matcher, 1), matchedTextRange(matcher, 2, 3)))
+          .build();
+    }
+  }
+
+  static class JavaScriptCompileParser extends SingleLineParser {
+    private final Project project;
+
+    JavaScriptCompileParser(Project project) {
+      super(
+          "^([^:]*\\.js):" // file path
+              + "([0-9]+): " // line number
+              + "(ERROR|WARNING) - " // message type
+              + "(.*)$"); // message
+      this.project = project;
+    }
+
+    @Override
+    protected IssueOutput createIssue(Matcher matcher) {
+      final File file = FileResolver.resolveToFile(project, matcher.group(1));
+      IssueOutput.Category category = messageCategory(Ascii.toLowerCase(matcher.group(3)));
+      return IssueOutput.issue(category, matcher.group(4))
+          .inFile(file)
+          .onLine(Integer.parseInt(matcher.group(2)))
+          .consoleHyperlinkRange(
+              union(fileHighlightRange(matcher, 1), matchedTextRange(matcher, 2, 2)))
+          .build();
+    }
+  }
+
+  static class DefaultCompileParser extends SingleLineParser {
+    private final Project project;
+
+    DefaultCompileParser(Project project) {
+      super(
+          "^([^:]*):" // file path
+              + "([0-9]+):" // line number
+              + "(?:([0-9]+):)? " // optional column number
+              + "(fatal error|error|warning|note): " // message type
               + "(.*)$"); // message
       this.project = project;
     }
@@ -204,20 +282,21 @@ public class BlazeIssueParser {
               union(fileHighlightRange(matcher, 1), matchedTextRange(matcher, 2, 3)))
           .build();
     }
+  }
 
-    private static IssueOutput.Category messageCategory(String messageType) {
-      switch (Ascii.toLowerCase(messageType)) {
-        case "warning":
-          return IssueOutput.Category.WARNING;
-        case "note":
-          return IssueOutput.Category.NOTE;
-        case "error":
-        case "fatal error":
-          return IssueOutput.Category.ERROR;
-        default: // fall out
-      }
-      return IssueOutput.Category.ERROR;
+  private static IssueOutput.Category messageCategory(String messageType) {
+    switch (messageType) {
+      case "warning":
+        return IssueOutput.Category.WARNING;
+      case "note":
+      case "message":
+        return IssueOutput.Category.NOTE;
+      case "error":
+      case "fatal error":
+        return IssueOutput.Category.ERROR;
+      default: // fall out
     }
+    return IssueOutput.Category.ERROR;
   }
 
   static class TracebackParser implements Parser {
