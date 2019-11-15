@@ -40,6 +40,7 @@ import com.google.idea.blaze.base.sync.workspace.ExecutionRootPathResolver;
 import com.google.idea.blaze.cpp.CompilerVersionChecker.VersionCheckException;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.pom.NavigatableAdapter;
 import java.io.File;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -269,9 +270,14 @@ public final class BlazeConfigurationToolchainResolver {
       File executionRoot,
       File cppExecutable,
       String compilerVersion) {
-    File compilerWrapper =
-        CompilerWrapperProvider.getInstance()
-            .createCompilerExecutableWrapper(executionRoot, cppExecutable);
+    File compilerWrapper;
+    if (SystemInfo.isWindows) {
+      compilerWrapper = cppExecutable;
+    } else {
+      compilerWrapper =
+          CompilerWrapperProvider.getInstance()
+              .createCompilerExecutableWrapper(executionRoot, cppExecutable);
+    }
     if (compilerWrapper == null) {
       return null;
     }
