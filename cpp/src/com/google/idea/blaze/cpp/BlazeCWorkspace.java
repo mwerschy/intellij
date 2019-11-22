@@ -220,7 +220,7 @@ public final class BlazeCWorkspace implements ProjectComponent {
             targetIdeInfo.getcIdeInfo().getTransitiveQuoteIncludeDirectories().stream()
                 .flatMap(resolver)
                 .filter(configResolveData::isValidHeaderRoot)
-                .map(file -> "-iquote" + file.getAbsolutePath())
+                .flatMap(file -> Stream.of("-Xclang", "-iquote" + file.getAbsolutePath()))
                 .collect(toImmutableList());
         // transitiveSystemIncludeDirectories are sourced from
         // CcSkylarkApiProvider.system_include_directories
