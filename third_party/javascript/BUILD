@@ -43,6 +43,7 @@ java_library(
         "intellij-2019.3": ["@intellij_ue_2019_3//:angular"],
         "intellij-ue-2019.3": ["@intellij_ue_2019_3//:angular"],
         "clion-2019.2": ["@intellij_ue_2019_2//:angular"],
+        "clion-2019.3": ["@intellij_ue_2019_3//:angular"],
         "default": [],
     }),
 )
