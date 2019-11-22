@@ -99,14 +99,7 @@ public class BlazeCidrRunConfigurationRunner implements BlazeCommandRunConfigura
 
       List<String> extraDebugFlags;
       if (!BlazeGDBServerProvider.shouldUseGdbserver()) {
-        extraDebugFlags =
-            ImmutableList.of(
-                "--compilation_mode=dbg",
-                "--copt=-O0",
-                "--copt=-g",
-                "--strip=never",
-                "--dynamic_mode=off",
-                "--fission=yes");
+        extraDebugFlags = ImmutableList.of("--compilation_mode=dbg");
       } else {
         CPPToolchains.Toolchain toolchainForDebugger =
             BlazeGDBServerProvider.getToolchain(configuration.getProject());
