@@ -82,12 +82,12 @@ public class BlazeProblemsView {
   private volatile FocusBehavior focusBehavior;
   private volatile UUID currentSessionId = UUID.randomUUID();
 
-  public BlazeProblemsView(Project project, ToolWindowManager wm) {
+  public BlazeProblemsView(Project project) {
     this.project = project;
     this.toolWindowId = Blaze.getBuildSystem(project).getName() + " Problems";
     panel = new BlazeProblemsViewPanel(project);
     Disposer.register(project, () -> Disposer.dispose(panel));
-    UIUtil.invokeLaterIfNeeded(() -> createToolWindow(project, wm));
+    UIUtil.invokeLaterIfNeeded(() -> createToolWindow(project, ToolWindowManager.getInstance(project)));
   }
 
   private void createToolWindow(Project project, ToolWindowManager wm) {

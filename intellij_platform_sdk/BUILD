@@ -253,6 +253,13 @@ config_setting(
 )
 
 config_setting(
+    name = "clion-canary",
+    values = {
+        "define": "ij_product=clion-canary",
+    },
+)
+
+config_setting(
     name = "clion-2019.2",
     values = {
         "define": "ij_product=clion-2019.2",
@@ -263,6 +270,13 @@ config_setting(
     name = "clion-2019.3",
     values = {
         "define": "ij_product=clion-2019.3",
+    },
+)
+
+config_setting(
+    name = "clion-2020.1",
+    values = {
+        "define": "ij_product=clion-2020.1",
     },
 )
 

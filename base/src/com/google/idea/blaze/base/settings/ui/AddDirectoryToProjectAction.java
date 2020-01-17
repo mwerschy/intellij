@@ -52,6 +52,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.SwingHelper;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -130,7 +131,7 @@ public final class AddDirectoryToProjectAction extends BlazeProjectAction {
           WorkspaceFileTextField.create(
               workspacePathResolver, descriptor, PATH_FIELD_WIDTH, myDisposable);
       JBLabel directoryLabel =
-          new JBLabel("Directory:", AllIcons.Modules.SourceFolder, SwingConstants.LEFT);
+          new JBLabel("Directory:", PlatformIcons.SOURCE_FOLDERS_ICON, SwingConstants.LEFT);
       JPanel directoryPanel =
           SwingHelper.newHorizontalPanel(
               Component.TOP_ALIGNMENT, directoryLabel, fileTextField.getField());

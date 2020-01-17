@@ -328,7 +328,7 @@ public final class BlazeCidrLauncher extends CidrLauncher {
       return new GoogleTestConsoleBuilder(configuration.getProject(), testUiSession);
     }
     return new CidrConsoleBuilder(
-        configuration.getProject(), /* CidrToolEnvironment */ null, /* baseDir */ null);
+        configuration.getProject(), /* CidrToolEnvironment */ null, /* baseDir */ (File) null);
   }
 
   private ImmutableList<String> getGdbStartupCommands(File workspaceRootDirectory) {
@@ -350,7 +350,7 @@ public final class BlazeCidrLauncher extends CidrLauncher {
     @Nullable private final BlazeTestUiSession testUiSession;
 
     private GoogleTestConsoleBuilder(Project project, @Nullable BlazeTestUiSession testUiSession) {
-      super(project, /* CidrToolEnvironment */ null, /* baseDir */ null);
+      super(project, /* CidrToolEnvironment */ null, /* baseDir */ (File) null);
       this.testUiSession = testUiSession;
       addFilter(new BlazeCidrTestOutputFilter(project));
     }

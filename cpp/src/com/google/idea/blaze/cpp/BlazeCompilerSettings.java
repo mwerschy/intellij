@@ -49,7 +49,7 @@ final class BlazeCompilerSettings {
 
   OCCompilerKind getCompiler(OCLanguageKind languageKind) {
     if (languageKind == CLanguageKind.C || languageKind == CLanguageKind.CPP) {
-      return OCCompilerKind.CLANG;
+      return OCCompilerKind.CLANG_CL;
     }
     return OCCompilerKind.UNKNOWN;
   }

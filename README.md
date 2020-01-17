@@ -28,6 +28,10 @@ Detailed docs are available [here](http://ij.bazel.build).
 
 ## Building the plugin
 
+Building requires `tools.jar` from JDK 8.
+
+`set JAVA_HOME=C:\Program Files\AdoptOpenJDK\jdk-8.0.242.08-hotspot`
+
 Install Bazel, then build the target `*:*_bazel_zip` for your desired product:
 
 * `bazel build //ijwb:ijwb_bazel_zip --define=ij_product=intellij-latest`

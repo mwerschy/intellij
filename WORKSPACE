@@ -28,8 +28,9 @@ http_archive(
 http_archive(
     name = "intellij_ce_2020_1",
     build_file = "@//intellij_platform_sdk:BUILD.idea201",
-    sha256 = "396f0045a713f224015c082924fc5c71be0e029effa2fd7bd3fa65632a55a18c",
-    url = "https://download.jetbrains.com/idea/ideaIC-201.4515.24.tar.gz",
+    sha256 = "1f594e4e493aecd06c6381a7f8c364d7a22d4dc18c5c0916b7100045ae38b466",
+    strip_prefix = "idea-IC-201.4865.12",
+    url = "https://download.jetbrains.com/idea/ideaIC-201.4865.12.tar.gz",
 )
 
 # The plugin api for IntelliJ UE 2019.2. This is required to run UE-specific
@@ -55,8 +56,9 @@ http_archive(
 http_archive(
     name = "intellij_ue_2020_1",
     build_file = "@//intellij_platform_sdk:BUILD.ue201",
-    sha256 = "0944d1b15e6d8d8c13e33ed0bb43773bf7a2cd2100a679c2a668d543a7931de8",
-    url = "https://download-cf.jetbrains.com/idea/ideaIU-201.4515.24.tar.gz",
+    sha256 = "99aaf2b231092859b191221d6877af7733b512cf421e8cac23725c0642591954",
+    strip_prefix = "idea-IU-201.4865.12",
+    url = "https://download.jetbrains.com/idea/ideaIU-201.4865.12.tar.gz",
 )
 
 # The plugin api for CLion 2019.2. This is required to build CLwB,
@@ -75,6 +77,15 @@ http_archive(
     build_file = "@//intellij_platform_sdk:BUILD.clion193",
     sha256 = "3c12a827bedf5ecc0d6c9aaf6822bb849f53798e5fd48e3f7ef975b4aa5976b7",
     url = "https://download.jetbrains.com/cpp/CLion-2019.3.3.tar.gz",
+)
+
+# The prerelease plugin api for CLion 2019.3. This is required to build CLwB,
+# and run integration tests.
+http_archive(
+    name = "clion_2020_1",
+    build_file = "@//intellij_platform_sdk:BUILD.clion201",
+    sha256 = "9a5899700b8b6ed06bb612580834a728bed660a376d1ad55d1f2b3eb8b9d4700",
+    url = "https://download.jetbrains.com/cpp/CLion-201.4865.10.tar.gz",
 )
 
 # Python plugin for Android Studio 3.5. Required at compile-time for python-specific features.

@@ -27,6 +27,7 @@ intellij_plugin_library(
     name = "plugin_library",
     plugin_xmls = ["src/META-INF/clwb.xml"] + select_for_plugin_api({
         "clion-2019.3": ["src/META-INF/clwb_test_framework_deps.xml"],
+        "clion-2020.1": ["src/META-INF/clwb_test_framework_deps.xml"],
         "default": [],
     }),
     deps = [":clwb_lib"],
@@ -65,7 +66,6 @@ intellij_plugin(
         "//base:plugin_library",
         "//cpp:plugin_library",
         "//dart:plugin_library",
-        "//javascript:plugin_library",
         "//python:plugin_library",
         "//skylark:plugin_library",
         "//terminal:plugin_library",

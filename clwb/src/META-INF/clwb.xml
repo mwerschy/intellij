@@ -22,6 +22,8 @@
     <applicationService serviceInterface="com.google.idea.blaze.base.plugin.BlazePluginId"
                         serviceImplementation="com.google.idea.blaze.plugin.ClwbPluginId"/>
 
+    <postStartupActivity implementation="com.google.idea.blaze.plugin.ClwbSpecificInitializer"/>
+
     <consoleFilterProvider implementation="com.google.idea.blaze.clwb.run.BlazeCppPathConsoleFilter$Provider"/>
 
     <programRunner implementation="com.google.idea.blaze.clwb.run.BlazeCppRunner"/>

@@ -18,13 +18,15 @@ package com.google.idea.blaze.plugin;
 import com.google.idea.blaze.base.settings.Blaze;
 import com.google.idea.blaze.clwb.CMakeActionsToManipulate;
 import com.google.idea.common.actions.ReplaceActionHelper;
-import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.startup.StartupActivity;
+import org.jetbrains.annotations.NotNull;
 
 /** Runs on startup. */
-public class ClwbSpecificInitializer implements ApplicationComponent {
+public class ClwbSpecificInitializer implements StartupActivity {
 
   @Override
-  public void initComponent() {
+  public void runActivity(@NotNull Project project) {
     hideCMakeActions();
   }
 

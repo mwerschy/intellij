@@ -15,10 +15,10 @@
  */
 package com.google.idea.blaze.clwb;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.projectWizard.EmptyModuleBuilder;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
+import com.intellij.util.PlatformIcons;
 import javax.swing.Icon;
 
 /** Our own CppModuleType to stop CMake classes trying to attach to projects */
@@ -50,7 +50,7 @@ public class BlazeCppModuleType extends ModuleType<EmptyModuleBuilder> {
 
   @Override
   public Icon getNodeIcon(boolean b) {
-    return AllIcons.Modules.SourceFolder;
+    return PlatformIcons.SOURCE_FOLDERS_ICON;
   }
 
   private static class BlazeCppModuleBuilder extends EmptyModuleBuilder {

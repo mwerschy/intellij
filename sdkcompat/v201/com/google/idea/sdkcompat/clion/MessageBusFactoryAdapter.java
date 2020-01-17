@@ -17,6 +17,7 @@
 package com.google.idea.sdkcompat.clion;
 
 import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.MessageBusOwner;
 import com.intellij.util.messages.impl.MessageBusFactoryImpl;
 
 /**
@@ -28,6 +29,6 @@ public final class MessageBusFactoryAdapter {
   private MessageBusFactoryAdapter() {}
 
   public static MessageBus newMessageBus(Object object) {
-    return new MessageBusFactoryImpl().createMessageBus(object);
+    return new MessageBusFactoryImpl().createMessageBus((MessageBusOwner) object);
   }
 }

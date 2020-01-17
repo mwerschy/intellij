@@ -25,7 +25,7 @@ public class ToolchainUtils {
     Toolchain toolchain = CPPToolchains.getInstance().getDefaultToolchain();
     if (toolchain == null) {
       toolchain = new Toolchain(OSType.getCurrent());
-      toolchain.setName(Toolchain.DEFAULT);
+      toolchain.setName(Toolchain.getDefault());
     }
     return toolchain;
   }
