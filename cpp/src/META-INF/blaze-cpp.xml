@@ -23,6 +23,11 @@
         com.google.idea.blaze.cpp.navigation.DelegatingSwitchToHeaderOrSourceProvider$ExtensionReplacer
       </implementation-class>
     </component>
+    <component>
+      <implementation-class>
+        com.google.idea.blaze.cpp.WindowsClangPatcher
+      </implementation-class>
+    </component>
   </application-components>
   <project-components>
     <component>
